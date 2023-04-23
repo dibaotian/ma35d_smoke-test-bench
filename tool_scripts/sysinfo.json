@@ -1,0 +1,27 @@
+{
+    "schema": {
+        "major": "0",
+        "minor": "1",
+        "patch": "0"
+    },
+    "system": {
+        "host": {
+            "os": {
+                "os": "Linux",
+                "node": "3448b3664261",
+                "release": "5.15.0-69-generic",
+                "version": "#76~20.04.1-Ubuntu SMP Mon Mar 20 15:54:19 UTC 2023",
+                "machine": "x86_64",
+                "cpu_cores": "16",
+                "memory_bytes": "33604698112",
+                "glibc": "2.31"
+            },
+            "devices": [
+                {
+                    "bdf": "0000:09:00.0"
+                }
+            ]
+        }
+    }
+}
+

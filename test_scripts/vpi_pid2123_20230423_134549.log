@@ -1,0 +1,3 @@
+20230423/134549 vpi//home/mapped/git/ma35/ma35/build_alpha/_deps/vsi_libs-src/src/vpe/src/dec/vpi_video_dec_hdr.c(409) get_sei_info_ready:error:SEI : Not support for this decoder.
+20230423/134549 vpi//home/mapped/git/ma35/ma35/build_alpha/_deps/vsi_libs-src/src/vpe/src/dec/vpi_video_dec_utils.c(1525) dec_output_picture:error:get_sei_info_ready failed
+20230423/134549 vpi//home/mapped/git/ma35/ma35/build_alpha/_deps/vsi_libs-src/src/vpe/src/dec/vpi_video_dec.c(499) vpi_decoder_vcd_get_output_frame:error:dec_output_picture failed!
