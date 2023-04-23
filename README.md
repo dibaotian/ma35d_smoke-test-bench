@@ -1,6 +1,6 @@
 # ma35d_smoke-test-bench
 
-### this test bench is used for MA35D basic transcode function test
+### This test bench is used for MA35D basic transcode function test
 
 ###
 
@@ -46,8 +46,12 @@
 ### 6 run the test script
 #### >cd /demo/test_scripts
 #### >./run_base_test.sh
+#### NOTE: In the ffmpeg_cmd.sh , you can use EN_CPU=true and EN_MA35=true to decide run the transcode in CPU or MA35D
+####       also in the run_base_test.sh you should set the device=cpu or device=ma35 in the test
 
 ###
+
+
 
 
 

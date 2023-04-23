@@ -13,7 +13,6 @@
 # https://aomedia.org/
 
 # EN_CPU=true
-
 EN_MA35=true
 
 codec_dec=(h264dec hevcdec av1dec vp9dec)
