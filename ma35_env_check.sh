@@ -28,6 +28,8 @@ echo ""
 echo "##### Memory info #####"
 lsmem
 
+sudo dmidecode -t memory | egrep "Type:|Speed:|Width|Manufacturer:|Volatile Size:" | egrep -v "Unknown|None|Configured|Total" | awk 'NR<=5'
+
 echo ""
 
 echo "##### BIOS info #####"

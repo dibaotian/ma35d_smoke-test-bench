@@ -12,8 +12,7 @@
 # https://www.elecard.com/videos
 # https://aomedia.org/
 
-# EN_CPU=true
-EN_MA35=true
+
 
 codec_dec=(h264dec hevcdec av1dec vp9dec)
 codec_enc=(h264enc hevcenc av1enc)
@@ -22,9 +21,9 @@ codec=(${codec_dec[*]} ${codec_enc[*]} ${codec_tra[*]})
 
 
 #输入参数检查
-if [ $# -ne 3 ];then
+if [ $# -ne 4 ];then
     echo "please input correct parameter"
-    echo "./ffmpeg_cmd.sh [trans_type] [codec_inputfile] [codec_putputfile]"
+    echo "./ffmpeg_cmd.sh [trans_type] [codec_inputfile] [codec_putputfile] <device_type cpu/ma35>"
     exit
 else
     if [[ ! "${codec[@]}" =~ "$1" ]]; then
@@ -32,6 +31,26 @@ else
         echo "the support trans type -- ${codec[*]}"
         exit
     fi
+fi
+
+
+if [ $4 == "cpu" ] || [ $4 == "ma35" ];then
+    device_type=$4
+else
+    echo "device type error, should be cpu or ma35"
+    exit
+fi
+
+if [ $device_type == "cpu" ]; then
+    EN_CPU=true
+else
+    EN_CPU=false
+fi
+
+if [ $device_type == "ma35" ]; then
+    EN_MA35=true
+else
+     EN_MA35=false
 fi
 
 
@@ -637,6 +656,6 @@ case $1 in
     *) 
         echo "please input a transcode type"
         echo "For Example"
-        echo "./ffmpeg_cmd.sh <transcode type> <input_video> <output_video> "
+         echo "./ffmpeg_cmd.sh [trans_type] [codec_inputfile] [codec_putputfile] <device_type default cpu>"
     ;;
 esac

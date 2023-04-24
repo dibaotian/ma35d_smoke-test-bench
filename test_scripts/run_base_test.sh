@@ -6,17 +6,15 @@
 # Contact: minx@amd.com
 # Description: This script is used for the MA35D basic test.
 
+# change here to decied run the codec in CPU or ma35d transcode card
+# device=cpu
+device=ma35
+
 # defind codec array
-# declare -A codec_dec
-# declare -A codec_enc
-# declare -A codec_tra
 codec_dec=(h264dec hevcdec av1dec vp9dec)
 codec_enc=(h264enc hevcenc av1enc)
 codec_tra=(h264toh264 h264tohevc h264toav1 hevctohevc hevctoh264 hevctoav1 av1toav1 av1toh264 av1tohevc)
 codec=(${codec_dec[*]} ${codec_enc[*]} ${codec_tra[*]})
-
-# device=cpu
-device=ma35
 
 echo " "
 # defind codec input and output 
@@ -119,6 +117,7 @@ do
         fi
 
 
+        # check the input stream type
         if [[ "${codec_enc[@]}" =~ "$key" ]]; then
             # encode input stream could be rawvideo or ...
 
@@ -141,16 +140,19 @@ done
 # for key in ${!codec_input[@]}
 for key in ${codec[@]}
 do 
-    ./ffmpeg_cmd.sh $key ${codec_input[$key]} ${codec_output[$key]}
+    ./ffmpeg_cmd.sh $key ${codec_input[$key]} ${codec_output[$key]} $device
 
+    # todo find more way to check the transcode video
     # execute sucess and fail check
     if [ $? -eq 0 ];then 
         # size=$(mediainfo trans_out/cpu/${codec_output[$key]}  | grep "File size" | awk '{print $4}')
-        size=$(mediainfo trans_out/$device/${codec_output[$key]}  | grep "File size" | awk '{print $4}')
+        size=$(mediainfo trans_out/$device/${codec_output[$key]} | grep "File size" | awk '{print $4}')
         echo "size is $size"
         if [ $size == 0 ] || [  -z $size ];then
             echo "$key failed"
             codec_result[$key]="failed"
+            codec_fail_reason[$key]="mediainfo check fail, output size =0 or mediainfo check fail"
+
             echo ${codec_result[$key]}
         else
             echo "$key succeeded"
@@ -160,6 +162,7 @@ do
     else
         echo "$key failed"
         codec_result[$key]="failed"
+        codec_fail_reason[$key]="ffmpeg return fail"
         echo ${codec_result[$key]}
     fi
 done
@@ -181,8 +184,6 @@ echo "#####execute result#####"
 # printf "%10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s %10s\n" ${codec_result[h264dec]}  ${codec_result[hevcdec]}  ${codec_result[av1dec]}   $h264enc  $hevcenc  $av1enc   $h264toh264  $h264tohevc   $h264toav1   $hevctohevc $hevctoh264  $hevctoav1  $av1toav1  $av1toh264  $av1tohevc  $vp9dec
 
 exit
-
-
 
 ./ffmpeg_cmd.sh h264dec ../videos/TheaterSquare_640x360.h264.mp4
 if [ $? -eq 0 ]

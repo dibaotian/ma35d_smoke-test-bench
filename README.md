@@ -52,6 +52,23 @@
 ###
 
 
+根据网络搜索结果，您可以使用 egrep 命令来过滤出有效的内存信息，例如大小、类型等。例如，您可以使用以下命令¹：
+
+sudo dmidecode -t memory | egrep "Maximum Capacity|Number Of Devices|Size|Type:" | egrep -v "No Module|Unknown|None"
+
+这将显示每个内存设备的最大容量、数量、大小和类型，排除了空的或未知的模块。
+
+根据网络搜索结果，您可以使用 dmidecode 命令来查看 Ubuntu 下的内存插槽数。例如，您可以使用以下命令¹：
+
+
+这将显示一个整数，表示您的主板支持的内存插槽数。您还可以使用 lshw 命令来查看每个插槽的详细信息，例如大小、类型、速度等²。
+
+Source: Conversation with Bing, 4/24/2023(1) command to check RAM slots in motherboard? - Ask Ubuntu. https://askubuntu.com/questions/673408/command-to-check-ram-slots-in-motherboard Accessed 4/24/2023.
+(2) hardware - Number of RAM slots - Ask Ubuntu. https://askubuntu.com/questions/1092815/number-of-ram-slots Accessed 4/24/2023.
+(3) How to Check RAM Slots in Linux - Appuals.com. https://appuals.com/check-ram-slots-linux/ Accessed 4/24/2023.
+(4) detect number of RAM channels - Unix & Linux Stack Exchange. https://unix.stackexchange.com/questions/215206/detect-number-of-ram-channels Accessed 4/24/2023.
+
+
 
 
 
