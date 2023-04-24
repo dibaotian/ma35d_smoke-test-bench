@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ./ffmpeg_cmd.sh h264dec ../videos/TheaterSquare_640x360.h264.mp4 h264dec.out # fail
+./ffmpeg_cmd.sh h264dec ../videos/TheaterSquare_640x360.h264.mp4 h264dec.out # fail
 # ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 -i ../videos/TheaterSquare_640x360.h264.mp4
 # ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 -i trans_out/cpu/h264dec.out
 # ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 -i ../videos/TheaterSquare_640x360.h264.mp4

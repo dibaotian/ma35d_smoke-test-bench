@@ -1,48 +1,74 @@
 #!/bin/bash
 
-
-
 if [ "$EUID" -eq 0 ]; then 
     echo "Start MA35D env check" 
+    echo ""
 else 
     echo "please execute in root privilege"
     exit
 fi
 
-sudo apt update -y
-
 which virt-host-validate &> /dev/null
 if [ $? -ne 0 ]; then 
+    sudo apt update -y
     sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils -y
 fi
 
-lscpu
+which dmidecode &> /dev/null
+if [ $? -ne 0 ]; then 
+    sudo apt-get install dmidecode -y
+fi
+
+echo "##### CPU info #####"
+echo "$(sudo dmidecode -s processor-manufacturer)"
+echo "$(sudo dmidecode -s processor-version)"
+echo "Frequency $(sudo dmidecode -s processor-frequency)"
 echo ""
 
+echo "##### Memory info #####"
+lsmem
+
+echo ""
+
+echo "##### BIOS info #####"
+echo "vendor:$(sudo dmidecode -s bios-vendor)"
+echo "version:$(sudo dmidecode -s bios-version)"
+
+echo ""
+
+echo "##### Mother board info #####"
+echo "manufacturer: $(sudo dmidecode -s baseboard-manufacturer)"
+echo "product-name: $(sudo dmidecode -s baseboard-product-name)"
+
+echo ""
+
+echo "##### Operation system info #####"
 lsb_release -a
 echo ""
 
-uname -a
+echo "##### Kernel info #####"
+uname -r
 
 echo ""
 
+
 lsb_release -d | grep -q "Ubuntu 20.04"
-if [ $? -eq 0 ]; then 
-    echo "OS is Ubuntu 20.04"
-    echo ""
-else
-    echo "need Ubuntu 20.04"
+if [ $? -ne 0 ]; then 
+    echo "Need Ubuntu 20.04"
     exit
 fi
 
-lspci -vvd 10ee:
+echo "##### device info #####"
+lspci -d 10ee:
 
 echo ""
 
+echo "##### PCIE Link status #####"
 lspci -vvd 10ee: | grep LnkSta:
 
 echo ""
 
+echo "##### Check result #####"
 
 # lspci -d 10ee: | grep -q "Xilinx Corporation Device 5070"
 DEV_NUM=$(lspci -d 10ee: | wc -l)
@@ -60,8 +86,6 @@ if [ $? -eq 0 ]; then
 else
     echo "2  MA35D driver is not installed"
 fi
-
-
 
 virt-host-validate | grep -q "FAIL"
 if [ $? -eq 1 ]; then 
@@ -89,3 +113,4 @@ else
 fi
 
 echo "All check passed"
+

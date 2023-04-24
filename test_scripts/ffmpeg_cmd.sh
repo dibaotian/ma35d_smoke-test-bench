@@ -56,8 +56,12 @@ SLICE=0
 FRAMES=300
 SCALER=""
 
-# output_type=mp4
-# output_type=rawvideos
+# ffmpeg -formats
+output_mp4=mp4
+output_raw=rawvideo
+output_y4m=y4m
+output_mkv=mkv
+output_avi=avi
 
 ######CODEC########
 # type      ma35decode     ma35encode
@@ -133,7 +137,7 @@ case $1 in
         #        -c:v $MA35_H264_DEC  \
         #        -i  $2 \
         #        -frames:v $FRAMES \
-        #        -f mp4 h264_decode.yuv
+        #        -f output_raw h264_decode.yuv
 
         if [[ $EN_CPU == true ]];then
             echo "@@@CPU process@@@";
@@ -143,7 +147,7 @@ case $1 in
             ffmpeg $CPU_CONFIG \
                     -c:v $CPU_H264_DEC \
                     -i  $2\
-                    -f mp4 $CPU_OUT_DIR/$3
+                    -f $output_raw $CPU_OUT_DIR/$3
         fi
 
         if [[ $EN_MA35 == true ]];then
@@ -151,7 +155,7 @@ case $1 in
             ffmpeg $MA35_CONFIG \
                 -c:v $MA35_H264_DEC  \
                 -i  $2 \
-                -f mp4 $MA35_OUT_DIR/$3
+                -f $output_raw $MA35_OUT_DIR/$3
         fi
         ;;
 
@@ -177,7 +181,7 @@ case $1 in
                 -c:v $CPU_HEVC_DEC  \
                 -i $2 \
                 -frames:v $FRAMES \
-                -f mp4 $CPU_OUT_DIR/$3
+                -f $output_raw $CPU_OUT_DIR/$3
         fi
 
         if [[ $EN_MA35 == true ]];then
@@ -186,7 +190,7 @@ case $1 in
                 -c:v $MA35_HEVC_DEC  \
                 -i $2 \
                 -frames:v $FRAMES \
-                -f mp4 $MA35_OUT_DIR/$3
+                -f $output_raw $MA35_OUT_DIR/$3
         fi
         ;;
 
@@ -211,7 +215,7 @@ case $1 in
             ffmpeg $CPU_CONFIG \
                    -c:v $CPU_AV1_DEC  \
                    -i  $2 \
-                   -f mp4 $CPU_OUT_DIR/$3
+                   -f $output_raw $CPU_OUT_DIR/$3
         fi
 
         if [[ $EN_MA35 == true ]];then
@@ -219,7 +223,7 @@ case $1 in
             ffmpeg $MA35_CONFIG \
                 -c:v $MA35_AV1_DEC  \
                 -i  $2 \
-                -f mp4 $MA35_OUT_DIR/$3
+                -f $output_raw $MA35_OUT_DIR/$3
         fi
         ;;
 
@@ -243,7 +247,7 @@ case $1 in
             ffmpeg $CPU_CONFIG \
                    -c:v $CPU_VP9_DEC  \
                    -i  $2 \
-                   -f mp4 $CPU_OUT_DIR/$3
+                   -f $output_raw $CPU_OUT_DIR/$3
         fi
         
         if [[ $EN_MA35 == true ]];then
@@ -251,7 +255,7 @@ case $1 in
             ffmpeg $MA35_CONFIG \
                 -c:v $MA35_VP9_DEC  \
                 -i  $2 \
-                -f mp4 $MA35_OUT_DIR/$3
+                -f $output_raw $MA35_OUT_DIR/$3
         fi
         ;;
     
