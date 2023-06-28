@@ -6,14 +6,15 @@
     },
     "system": {
         "host": {
+            "status": "ok",
             "os": {
                 "os": "Linux",
-                "node": "3448b3664261",
-                "release": "5.15.0-69-generic",
-                "version": "#76~20.04.1-Ubuntu SMP Mon Mar 20 15:54:19 UTC 2023",
+                "node": "X570-AORUS-PRO",
+                "release": "5.15.0-75-generic",
+                "version": "#82~20.04.1-Ubuntu SMP Wed Jun 7 19:37:37 UTC 2023",
                 "machine": "x86_64",
                 "cpu_cores": "16",
-                "memory_bytes": "33604698112",
+                "memory_bytes": "33592090624",
                 "glibc": "2.31"
             },
             "devices": [

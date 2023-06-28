@@ -11,7 +11,7 @@
 device=ma35
 
 # defind codec array
-codec_dec=(h264dec hevcdec av1dec vp9dec)
+codec_dec=(h264dec hevcdec av1dec)  # vp9dec will be support in next sdk version
 codec_enc=(h264enc hevcenc av1enc)
 codec_tra=(h264toh264 h264tohevc h264toav1 hevctohevc hevctoh264 hevctoav1 av1toav1 av1toh264 av1tohevc)
 codec=(${codec_dec[*]} ${codec_enc[*]} ${codec_tra[*]})

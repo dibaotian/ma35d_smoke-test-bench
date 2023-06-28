@@ -13,8 +13,7 @@
 # https://aomedia.org/
 
 
-
-codec_dec=(h264dec hevcdec av1dec vp9dec)
+codec_dec=(h264dec hevcdec av1dec ) # vp9dec
 codec_enc=(h264enc hevcenc av1enc)
 codec_tra=(h264toh264 h264tohevc h264toav1 hevctohevc hevctoh264 hevctoav1 av1toav1 av1toh264 av1tohevc)
 codec=(${codec_dec[*]} ${codec_enc[*]} ${codec_tra[*]})
@@ -40,6 +39,8 @@ else
     echo "device type error, should be cpu or ma35"
     exit
 fi
+
+echo "### device type is $device_type"
 
 if [ $device_type == "cpu" ]; then
     EN_CPU=true
@@ -72,7 +73,7 @@ mkdir -p $MA35_OUT_DIR
 
 DEVICE=0
 SLICE=0
-FRAMES=300
+FRAMES=1000
 SCALER=""
 
 # ffmpeg -formats
@@ -84,26 +85,24 @@ output_avi=avi
 
 ######CODEC########
 # type      ma35decode     ma35encode
-# h264	    h264dec_vpe	   h264enc_vpe snh264enc
-# hevc	    hevcdec_vpe	   hevcenc_vpe snhevcenc
-# av1	    av1dec_vpe	   av1enc_vpe xav1enc_vpe snav1enc
-# vp9	    vp9dec_vpe	   NA
+# h264	    h264_ama	   h264_ama
+# hevc	    hevc_ama	   hevc_ama
+# av1	    av1_ama	       av1_ama
+# vp9	    vp9_ama	       NA                   //alpha version not support 
 
 #MA35D
-MA35_H264_DEC=h264dec_vpe
-# MA35_H264_ENC=h264enc_vpe
-MA35_H264_ENC=snh264enc 
+MA35_H264_DEC=h264_ama
+MA35_H264_ENC=h264_ama 
 
-MA35_HEVC_DEC=hevcdec_vpe
-# MA35_HEVC_ENC=hevcdec_vpe  
-MA35_HEVC_ENC=snhevcenc
+MA35_HEVC_DEC=hevc_ama 
+MA35_HEVC_ENC=hevc_ama
 
-MA35_AV1_DEC=av1dec_vpe #snav1dec
+MA35_AV1_DEC=av1_ama #snav1dec
 # MA35_AV1_DEC=snav1dec
 # MA35_AV1_ENC=av1enc_vpe #snav1enc
-MA35_AV1_ENC=snav1enc 
+MA35_AV1_ENC=av1_ama 
 
-MA35_VP9_DEC=vp9dec_vpe
+MA35_VP9_DEC=vp9_ama
 
 #CPU
 CPU_H264_DEC=h264
@@ -122,7 +121,6 @@ CPU_AV1_ENC=libaom-av1 #libaom (libaom-av1)
 
 CPU_VP9_DEC=vp9
 
-
 ######codec########
 
 
@@ -131,7 +129,8 @@ CPU_VP9_DEC=vp9
 # TRANS_CONFIG="-vsync 0 -c:v mpsoc_vcu_h264 -profile:v high -g ${GOP} -control-rate 0 -bf 0 -threads 1 -r 30 -lookahead_depth 0 -tune-metrics 1"  # -slice-qp ${QP} -expert-options ip-delta=${delta}"
 # CONFIG="-hide_banner -y -stream_loop -1 -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} -vsync 0 "
 # -hide_banner is an option in FFmpeg that can be used to suppress printing the banner and copyright information when running FFmpeg commands.
-MA35_CONFIG="-hide_banner -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} -vsync 0 "
+# MA35_CONFIG="-hide_banner -y -hwaccel ama  -vsync 0 "
+MA35_CONFIG="-hide_banner -y -hwaccel ama  -vsync 0 "
 CPU_CONFIG="-hide_banner -y -vsync 0"
 
 if [ -f $2 ]; then
@@ -171,9 +170,23 @@ case $1 in
 
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";
+           
+            # ffmpeg $MA35_CONFIG \
+            #     -stream_loop -1 \
+            #     -out_fmt nv12 \
+            #     -c:v $MA35_H264_DEC  \
+            #     -i  $2 \
+            #     -frames:v $FRAMES \
+            #     -vf hwdownload,format=nv12 \
+            #     -f $output_raw $MA35_OUT_DIR/$3
+
             ffmpeg $MA35_CONFIG \
+                -stream_loop -1 \
+                -out_fmt yuv420p \
                 -c:v $MA35_H264_DEC  \
                 -i  $2 \
+                -frames:v $FRAMES \
+                -vf hwdownload,format=yuv420p \
                 -f $output_raw $MA35_OUT_DIR/$3
         fi
         ;;
@@ -206,8 +219,11 @@ case $1 in
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";
             ffmpeg $MA35_CONFIG \
+                -stream_loop -1 \
+                -out_fmt nv12 \
                 -c:v $MA35_HEVC_DEC  \
                 -i $2 \
+                -vf hwdownload,format=nv12 \
                 -frames:v $FRAMES \
                 -f $output_raw $MA35_OUT_DIR/$3
         fi
@@ -240,8 +256,12 @@ case $1 in
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";
             ffmpeg $MA35_CONFIG \
+                -stream_loop -1 \
+                -out_fmt nv12 \
                 -c:v $MA35_AV1_DEC  \
                 -i  $2 \
+                -frames:v $FRAMES \
+                -vf hwdownload,format=nv12 \
                 -f $output_raw $MA35_OUT_DIR/$3
         fi
         ;;
@@ -272,8 +292,11 @@ case $1 in
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";
             ffmpeg $MA35_CONFIG \
+                -stream_loop -1 \
                 -c:v $MA35_VP9_DEC  \
                 -i  $2 \
+                -frames:v $FRAMES \
+                -vf hwdownload,format=nv12 \
                 -f $output_raw $MA35_OUT_DIR/$3
         fi
         ;;
@@ -298,12 +321,16 @@ case $1 in
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";
             ffmpeg $MA35_CONFIG \
-                   -i  $2 \
-                   -frames:v $FRAMES \
-                   -c:v $MA35_H264_ENC  \
-                   -f mp4 $MA35_OUT_DIR/$3
+                    -stream_loop -1 \
+                    -i  $2 \
+                    -pix_fmt yuv420p \
+                    -vf hwupload \
+                    -c:v $MA35_H264_ENC  \
+                    -frames:v $FRAMES \
+                    -f mp4 $MA35_OUT_DIR/$3
+                   
         fi
-    ;;
+        ;;
     
     hevcenc)
         echo "##########"
@@ -323,12 +350,14 @@ case $1 in
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";
             ffmpeg $MA35_CONFIG \
+                -stream_loop -1 \
                 -i  $2 \
+                -vf hwupload \
                 -c:v $MA35_HEVC_ENC  \
                 -frames:v $FRAMES \
                 -f mp4 $MA35_OUT_DIR/$3
         fi
-    ;;
+        ;;
 
     av1enc)
         echo "##########"
@@ -352,11 +381,14 @@ case $1 in
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";
             ffmpeg $MA35_CONFIG \
+                -stream_loop -1 \
                 -i  $2 \
+                -vf hwupload \
                 -c:v $MA35_AV1_ENC  \
+                -frames:v $FRAMES \
                 -f mp4 $MA35_OUT_DIR/$3
         fi
-    ;;
+        ;;
 
     h264toh264)
         echo "######################"
@@ -377,11 +409,12 @@ case $1 in
        if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";    
             # bug pre-alpha version , the transcode hang 
-            timeout 30 ffmpeg  $MA35_CONFIG \
+            ffmpeg  $MA35_CONFIG \
+                    -stream_loop -1 \
                     -c:v $MA35_H264_DEC \
                     -i $2 \
+                    -frames:v $FRAMES \
                     -c:v $MA35_H264_ENC \
-                    -xav1-params *slice=${SLICE} \
                     -b:v 20M \
                     -f mp4 $MA35_OUT_DIR/$3
         fi
@@ -405,11 +438,12 @@ case $1 in
 
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";    
-            timeout 30 ffmpeg  -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} \
-                    -vsync 0 \
+            ffmpeg  $MA35_CONFIG \
+                    -stream_loop -1 \
                     -c:v $MA35_H264_DEC \
                     -i $2 \
                     -c:v $MA35_HEVC_ENC \
+                    -frames:v $FRAMES \
                     -b:v 10M \
                     -f rawvideo $MA35_OUT_DIR/$3
         fi
@@ -419,37 +453,30 @@ case $1 in
         echo "######################"
         echo "h264 to av1 transcode"
         echo "######################"
-        # h264-av1 transcode
-        # ffmpeg  -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} \
-        #         -stream_loop -1 \
-        #         -vsync 0 \
-        #         -c:v $MA35_H264_DEC \
-        #         -i $2 \
-        #         -c:v $MA35_AV1_ENC \
-        #         -frames:v $FRAMES \
-        #         -b:v 10M \
-        #         -f mp4 h264_to_av1.av1
-
+      
         if [[ $EN_CPU == true ]];then
             echo "@@@CPU process@@@";
             # fmpeg -hide_banner -y -vsync 0 -c:v h264 -i  ../videos/Basketball_2.1920x1080.I420_20000kbps.h264.mp4 -c:v libaom-av1 -strict  experimental  -f mp4 out.yuv
-            ffmpeg  $CPU_CONFIG \
+           taskset -c 0-3 ffmpeg  $CPU_CONFIG \
                     -c:v $CPU_H264_DEC \
                     -i $2 \
                     -c:v $CPU_AV1_ENC \
                     -strict experimental \
-                    -frames:v 3 \
+                    -frames:v 10 \
                     -f mp4 $CPU_OUT_DIR/$3
         fi
 
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";    
-            ffmpeg  -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} \
-                    -vsync 0 \
-                    -c:v $MA35_H264_DEC \
-                    -i $2 \
-                    -c:v $MA35_AV1_ENC \
-                    -f rawvideo $MA35_OUT_DIR/$3
+            ffmpeg  $MA35_CONFIG \
+                -stream_loop -1 \
+                -c:v $MA35_H264_DEC \
+                -i $2 \
+                -c:v $MA35_AV1_ENC \
+                -frames:v $FRAMES \
+                -b:v 10M \
+                -f rawvideo $MA35_OUT_DIR/$3
+
         fi
         ;;
 
@@ -457,16 +484,6 @@ case $1 in
         echo "######################"
         echo "hevc to hevc transcode"
         echo "######################"
-        # hevc-hevc transcode
-        # ffmpeg  -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} \
-        #         -stream_loop -1 \
-        #         -vsync 0 \
-        #         -c:v $MA35_HEVC_DEC \
-        #         -i $2 \
-        #         -c:v $MA35_HEVC_ENC \
-        #         -frames:v $FRAMES \
-        #         -b:v 10M \
-        #         -f mp4 hevc_to_hevc.hevc
 
         if [[ $EN_CPU == true ]];then
             echo "@@@CPU process@@@";
@@ -484,11 +501,12 @@ case $1 in
 
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";    
-            timeout 30 ffmpeg  -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} \
-                    -vsync 0 \
+            ffmpeg  $MA35_CONFIG \
+                    -stream_loop -1 \
                     -c:v $MA35_HEVC_DEC \
                     -i $2 \
                     -c:v $MA35_HEVC_ENC \
+                    -frames:v $FRAMES \
                     -b:v 10M \
                     -f mp4 $MA35_OUT_DIR/$3
         fi
@@ -521,11 +539,12 @@ case $1 in
 
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";    
-            timeout 30 ffmpeg  -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} \
-                    -vsync 0 \
+            ffmpeg  $MA35_CONFIG \
+                    -stream_loop -1 \
                     -c:v $MA35_HEVC_DEC \
                     -i $2 \
                     -c:v $MA35_H264_ENC \
+                    -frames:v $FRAMES \
                     -b:v 10M \
                     -f mp4 $MA35_OUT_DIR/$3
         fi
@@ -550,9 +569,8 @@ case $1 in
         # hevc-av1 transcode
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";    
-            ffmpeg  -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} \
+            ffmpeg  $MA35_CONFIG \
                     -stream_loop -1 \
-                    -vsync 0 \
                     -c:v $MA35_HEVC_DEC \
                     -i $2 \
                     -c:v $MA35_AV1_ENC \
@@ -580,9 +598,8 @@ case $1 in
 
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";    
-            timeout 30 ffmpeg  -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} \
+            ffmpeg  $MA35_CONFIG \
                     -stream_loop -1 \
-                    -vsync 0 \
                     -c:v $MA35_AV1_DEC \
                     -i $2 \
                     -c:v $MA35_AV1_ENC \
@@ -610,9 +627,8 @@ case $1 in
 
         if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";    
-            ffmpeg  -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} \
+            ffmpeg  $MA35_CONFIG \
                     -stream_loop -1 \
-                    -vsync 0 \
                     -c:v $MA35_AV1_DEC \
                     -i $2 \
                     -c:v $MA35_H264_ENC \
@@ -640,9 +656,8 @@ case $1 in
 
          if [[ $EN_MA35 == true ]];then
             echo "&&&MA35 process&&&";    
-            ffmpeg  -y -init_hw_device vpe=dev0:/dev/transcoder${DEVICE} \
+            ffmpeg  $MA35_CONFIG \
                     -stream_loop -1 \
-                    -vsync 0 \
                     -c:v $MA35_AV1_DEC \
                     -i $2 \
                     -c:v $MA35_HEVC_ENC \

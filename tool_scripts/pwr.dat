@@ -1,0 +1,67 @@
+{
+    "schema": {
+        "major": "0",
+        "minor": "1",
+        "patch": "0"
+    },
+    "devices": [
+        {
+            "interface_type": "pcie",
+            "device_id": "0000:09:00.0",
+            "electrical": {
+                "status": "ok",
+                "power": {
+                    "chip": {
+                        "sensor3": {
+                            "id": "aux",
+                            "volt_mV": "745"
+                        },
+                        "sensor2": {
+                            "id": "ddr0",
+                            "volt_mV": "867"
+                        },
+                        "sensor1": {
+                            "id": "ml_engine",
+                            "volt_mV": "752"
+                        },
+                        "sensor0": {
+                            "id": "enc",
+                            "volt_mV": "751"
+                        }
+                    },
+                    "board": {
+                        "sensor0": {
+                            "id": "12V PEX Current",
+                            "current_mA": "613"
+                        },
+                        "sensor1": {
+                            "id": "3V AUX Current",
+                            "current_mA": "80"
+                        },
+                        "sensor2": {
+                            "id": "3V PEX Current",
+                            "current_mA": "306"
+                        },
+                        "sensor3": {
+                            "id": "12V PEX Voltage",
+                            "volt_mV": "11944"
+                        },
+                        "sensor4": {
+                            "id": "3V AUX Voltage",
+                            "volt_mV": "3384"
+                        },
+                        "sensor5": {
+                            "id": "3V PEX Voltage",
+                            "volt_mV": "3296"
+                        },
+                        "board_power": {
+                            "id": "board_power",
+                            "power_mW": "8600"
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
+
