@@ -53,7 +53,6 @@ uname -r
 
 echo ""
 
-
 lsb_release -d | grep -q "Ubuntu 20.04"
 if [ $? -ne 0 ]; then 
     echo "Need Ubuntu 20.04"
@@ -67,6 +66,11 @@ echo ""
 
 echo "##### PCIE Link status #####"
 lspci -vvd 10ee: | grep LnkSta:
+
+echo ""
+
+echo "##### Firmware version #####"
+cat /sys/class/misc/ama_transcoder0/version_information
 
 echo ""
 
@@ -106,13 +110,13 @@ else
     echo "   In the /etc/sysctl.conf add vm.nr_hugepages=4096"
 fi
 
-which docker &> /dev/null
-if [ $? -eq 0 ]; then 
-    echo "5  Docker installed"
-else
-    echo "6  Need install docker"
-    echo "6  refer https://docs.docker.com/engine/install/ubuntu/"
-fi
+# which docker &> /dev/null
+# if [ $? -eq 0 ]; then 
+#     echo "5  Docker installed"
+# else
+#     echo "6  Need install docker"
+#     echo "6  refer https://docs.docker.com/engine/install/ubuntu/"
+# fi
 
-echo "All check passed"
+echo "All check Complete"
 
