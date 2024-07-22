@@ -53,9 +53,9 @@ uname -r
 
 echo ""
 
-lsb_release -d | grep -q "Ubuntu 20.04"
+lsb_release -d | grep -q "Ubuntu 22.04"
 if [ $? -ne 0 ]; then 
-    echo "Need Ubuntu 20.04"
+    echo "Need Ubuntu 22.04"
     exit
 fi
 
@@ -93,21 +93,21 @@ else
     echo "2  MA35D driver is not installed"
 fi
 
-virt-host-validate | grep -q "FAIL"
-if [ $? -eq 1 ]; then 
-    echo "3  System virtualization config check passed"
-else
-    echo "3  System virtualization config check fail"
-    echo "   Please Enable Virtualization Technology in BIOS/UEFI,  Intel VT/VT-d or  AMD AMD-Vi"
-    echo "   Please Enable IOMMU Support, In /etc/default/grub GRUB_CMDLINE_LINUX_DEFAULT config amd_iommu=on or intel_iommu=on and iommu=pt"
-fi
+# virt-host-validate | grep -q "FAIL"
+# if [ $? -eq 1 ]; then 
+#     echo "3  System virtualization config check passed"
+# else
+#     echo "3  System virtualization config check fail"
+#     echo "   Please Enable Virtualization Technology in BIOS/UEFI,  Intel VT/VT-d or  AMD AMD-Vi"
+#     echo "   Please Enable IOMMU Support, In /etc/default/grub GRUB_CMDLINE_LINUX_DEFAULT config amd_iommu=on or intel_iommu=on and iommu=pt"
+# fi
 
-cat /etc/sysctl.conf | grep -q "vm.nr_hugepages="
-if [ $? -eq 0 ]; then 
-    echo "4  Huge page configuration check passed"
-else
-    echo "4  Huge page configuration check fail"
-    echo "   In the /etc/sysctl.conf add vm.nr_hugepages=4096"
+# cat /etc/sysctl.conf | grep -q "vm.nr_hugepages="
+# if [ $? -eq 0 ]; then 
+#     echo "4  Huge page configuration check passed"
+# else
+#     echo "4  Huge page configuration check fail"
+#     echo "   In the /etc/sysctl.conf add vm.nr_hugepages=4096"
 fi
 
 # which docker &> /dev/null
